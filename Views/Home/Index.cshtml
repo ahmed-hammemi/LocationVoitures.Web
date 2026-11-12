@@ -1,0 +1,75 @@
+﻿@model IEnumerable<LocationVoitures.Web.Models.Voiture>
+
+@{
+    ViewData["Title"] = "Accueil";
+}
+
+<!-- Bannière Hero -->
+<section class="bg-dark text-white text-center rounded-3 py-5 mb-5">
+    <div class="container py-4">
+        <h1 class="display-5 fw-bold">Auto Rent</h1>
+        <p class="lead mb-4">Citadines, berlines, SUV et utilitaires : réservez au meilleur tarif, en toute simplicité.</p>
+        <a href="#catalogue" class="btn btn-primary btn-lg">Voir le catalogue</a>
+    </div>
+</section>
+
+<!-- Catalogue -->
+<section id="catalogue">
+    <h2 class="mb-4 border-bottom pb-2">Notre catalogue</h2>
+
+    @if (!Model.Any())
+    {
+        <div class="text-center py-5 border rounded bg-light">
+            <div class="display-6 mb-3">🚘</div>
+            <h4 class="text-muted">Aucun véhicule disponible pour le moment</h4>
+            <p class="text-secondary mb-0">Revenez bientôt, notre flotte est en cours de mise à jour.</p>
+        </div>
+    }
+    else
+    {
+        <div class="row g-4">
+            @foreach (var voiture in Model)
+            {
+                <div class="col-12 col-md-6 col-lg-4">
+                    <div class="card h-100 shadow-sm">
+                        @if (!string.IsNullOrEmpty(voiture.CategoryVoiture?.ImageUrl))
+                        {
+                            <img src="@voiture.CategoryVoiture.ImageUrl" class="card-img-top object-fit-cover" style="height: 200px;" alt="@voiture.Marque @voiture.Modele" />
+                        }
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <h5 class="card-title mb-0">@voiture.Marque @voiture.Modele</h5>
+                                @if (voiture.EstDisponible)
+                                {
+                                    <span class="badge bg-success">Disponible</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-danger">En location</span>
+                                }
+                            </div>
+                            <span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 mb-3">
+                                @(voiture.CategoryVoiture?.Libelle ?? "Non catégorisée")
+                            </span>
+                            <ul class="list-unstyled text-muted small mb-3">
+                                <li>Matricule : <span class="font-monospace">@voiture.Matricule</span></li>
+                                <li>Année : @voiture.Annee</li>
+                            </ul>
+                            <div class="fs-4 fw-bold text-success">@voiture.PrixJour.ToString("N2") TND <small class="fs-6 text-muted fw-normal">/ jour</small></div>
+                        </div>
+                        <div class="card-footer bg-white border-0 pb-3">
+                            @if (voiture.EstDisponible)
+                            {
+                                <a asp-controller="Voiture" asp-action="Details" asp-route-id="@voiture.Id" class="btn btn-primary w-100">Réserver ce véhicule</a>
+                            }
+                            else
+                            {
+                                <a asp-controller="Voiture" asp-action="Details" asp-route-id="@voiture.Id" class="btn btn-outline-secondary w-100">Voir les détails</a>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</section>
